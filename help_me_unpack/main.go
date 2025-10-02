@@ -4,11 +4,10 @@ import (
 	"bytes"
 	"encoding/base64"
 	"encoding/binary"
-	"encoding/json"
 	"fmt"
 	"io"
-	"net/http"
-	"os"
+
+	"github.com/EyePlusPlus/hackattic/pkg/hackattic"
 )
 
 type JSONBody struct {
@@ -22,30 +21,6 @@ type SolutionBody struct {
 	Float           float32 `json:"float"`
 	Double          float64 `json:"double"`
 	BigEndianDouble float64 `json:"big_endian_double"`
-}
-
-var url = "https://hackattic.com/challenges/help_me_unpack/%s?access_token=%s"
-
-func fetchProblem() (JSONBody, error) {
-	var jsonBody JSONBody
-	res, err := http.Get(fmt.Sprintf(url, "problem", os.Getenv("ACCESS_TOKEN")))
-
-	if err != nil {
-		return jsonBody, fmt.Errorf("help_me_unpack#fetchProblem: %w", err)
-	}
-
-	defer res.Body.Close()
-
-	resBody, err := io.ReadAll(res.Body)
-	if err != nil {
-		return jsonBody, fmt.Errorf("help_me_unpack#fetchProblem: %w", err)
-	}
-
-	if err := json.Unmarshal(resBody, &jsonBody); err != nil {
-		return jsonBody, fmt.Errorf("help_me_unpack#fetchProblem: %w", err)
-	}
-
-	return jsonBody, nil
 }
 
 func unpackSolutionBytes(decoded []byte) (SolutionBody, error) {
@@ -84,36 +59,8 @@ func unpackSolutionBytes(decoded []byte) (SolutionBody, error) {
 	return solution, nil
 }
 
-func submitSolution(solution SolutionBody) (map[string]interface{}, error) {
-	jsonBody, err := json.Marshal(solution)
-	if err != nil {
-		return nil, err
-	}
-
-	submitUrl := fmt.Sprintf(url, "solve", os.Getenv("ACCESS_TOKEN"))
-	response, err := http.Post(submitUrl, "application/json", bytes.NewReader(jsonBody))
-	if err != nil {
-		return nil, err
-	}
-
-	defer response.Body.Close()
-	responseBody, err := io.ReadAll(response.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	var jsonResponse map[string]interface{}
-
-	if err := json.Unmarshal(responseBody, &jsonResponse); err != nil {
-		return nil, err
-	}
-
-	return jsonResponse, nil
-}
-
 func main() {
-
-	problemJson, fetchErr := fetchProblem()
+	problemJson, fetchErr := hackattic.FetchProblem[JSONBody]("help_me_unpack")
 	if fetchErr != nil {
 		panic(fetchErr)
 	}
@@ -128,11 +75,10 @@ func main() {
 		panic(unpackErr)
 	}
 
-	submitResponseJson, submitErr := submitSolution(solution)
+	submitResponse, submitErr := hackattic.SubmitSolution("help_me_unpack", solution)
 	if submitErr != nil {
 		panic(submitErr)
 	}
 
-	fmt.Println(submitResponseJson)
-
+	fmt.Println(submitResponse)
 }
