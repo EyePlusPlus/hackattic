@@ -42,7 +42,7 @@ func SubmitSolution[T any](challenge_name string, solution T) (string, error) {
 		return "", jsonErr
 	}
 
-	url := fmt.Sprintf(baseUrl+"&playground=1", challenge_name, "solve", os.Getenv("ACCESS_TOKEN"))
+	url := fmt.Sprintf(baseUrl, challenge_name, "solve", os.Getenv("ACCESS_TOKEN"))
 
 	httpResult, httpErr := http.Post(url, "application/json", bytes.NewReader(jsonResult))
 	if httpErr != nil {
