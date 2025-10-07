@@ -13,9 +13,11 @@ const (
 	baseUrl = "https://hackattic.com/challenges/%s/%s?access_token=%s"
 )
 
+var access_token = os.Getenv("ACCESS_TOKEN")
+
 func FetchProblem[T any](challenge_name string) (T, error) {
 	var problem T
-	url := fmt.Sprintf(baseUrl, challenge_name, "problem", os.Getenv("ACCESS_TOKEN"))
+	url := fmt.Sprintf(baseUrl, challenge_name, "problem", access_token)
 	res, err := http.Get(url)
 	if err != nil {
 		return problem, err
@@ -42,7 +44,7 @@ func SubmitSolution[T any](challenge_name string, solution T) (string, error) {
 		return "", jsonErr
 	}
 
-	url := fmt.Sprintf(baseUrl, challenge_name, "solve", os.Getenv("ACCESS_TOKEN"))
+	url := fmt.Sprintf(baseUrl, challenge_name, "solve", access_token)
 
 	httpResult, httpErr := http.Post(url, "application/json", bytes.NewReader(jsonResult))
 	if httpErr != nil {
