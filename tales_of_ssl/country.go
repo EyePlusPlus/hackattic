@@ -1,6 +1,7 @@
 package main
 
-var COUNTRY_CODES = map[string]string{"Afghanistan": "AF",
+var COUNTRY_CODES = map[string]string{
+	"Afghanistan":                            "AF",
 	"Åland Islands":                          "AX",
 	"Albania":                                "AL",
 	"Algeria":                                "DZ",
@@ -120,7 +121,7 @@ var COUNTRY_CODES = map[string]string{"Afghanistan": "AF",
 	"Kenya":                                  "KE",
 	"Kiribati":                               "KI",
 	"Korea, Democratic People's Republic of": "KP",
-	"Korea, Republic of	":                    "KR",
+	"Korea, Republic of":                     "KR",
 	"Kuwait":                                 "KW",
 	"Kyrgyzstan":                             "KG",
 	"Lao People's Democratic Republic":       "LA",
